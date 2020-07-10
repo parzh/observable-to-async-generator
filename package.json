@@ -35,5 +35,8 @@
     "@types/node": "14.0.20",
     "ts-node": "8.10.2",
     "typescript": "3.9.6"
+  },
+  "peerDependencies": {
+    "rxjs": "6.x.x"
   }
 }
