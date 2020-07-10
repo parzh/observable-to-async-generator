@@ -28,6 +28,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node --require ts-node/register src",
+    "prebuild": "rm -rf dist/*",
     "build": "tsc"
   },
   "devDependencies": {
