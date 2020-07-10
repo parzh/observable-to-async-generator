@@ -1,0 +1,38 @@
+{
+  "name": "observable-to-async-generator",
+  "version": "0.0.1",
+  "license": "MIT",
+  "keywords": [
+    "*",
+    "async",
+    "await",
+    "convert",
+    "create",
+    "function*",
+    "function *",
+    "generator",
+    "iterable",
+    "iterator",
+    "observable",
+    "otag",
+    "yield",
+    "yield*",
+    "yield *"
+  ],
+  "files": [
+    "/dist",
+    "/README.md"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --require ts-node/register src",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "14.0.20",
+    "ts-node": "8.10.2",
+    "typescript": "3.9.6"
+  }
+}

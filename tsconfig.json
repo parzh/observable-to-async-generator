@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "outDir": "dist",
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "forceConsistentCasingInFileNames": true,
+  }
+}
