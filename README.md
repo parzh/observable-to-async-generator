@@ -28,3 +28,7 @@ catch (error) {
 	handle(error);
 }
 ```
+
+# Notes
+
+- `rxjs@6` is a peer dependency for this package; it is primarily used to add types on the development stage. These type imports are removed from the JavaScript output, but are still present in `*.d.ts` files; in case if the type information is needed, `rxjs@6` should be installed manually.
