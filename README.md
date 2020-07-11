@@ -4,13 +4,11 @@ Convert an observable to ES6 async generator.
 
 # Import
 
-### TypeScript:
-
 ```ts
 import otag from "observable-to-async-generator";
 ```
 
-### JavaScript:
+&hellip; or:
 
 ```js
 const otag = require("observable-to-async-generator").default;
