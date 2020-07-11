@@ -1,7 +1,17 @@
 {
   "name": "observable-to-async-generator",
+  "description": "Convert an observable to ES6 async generator.",
   "version": "1.0.0-rc",
+  "author": "Dima Parzhitsky <parzhitsky@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parzhitsky/observable-to-async-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/parzhitsky/observable-to-async-generator/issues"
+  },
+  "homepage": "https://github.com/parzhitsky/observable-to-async-generator#readme",
   "keywords": [
     "*",
     "async",
