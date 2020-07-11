@@ -15,7 +15,9 @@ export default async function * otag<Value>(observable: Observable<Value>): Asyn
 		},
 
 		error(error: unknown) {
-			deferred.reject(error instanceof Error ? error : new Error(String(error)));
+			const result = deferred;
+			deferred = defer<Value>();
+			result.reject(error instanceof Error ? error : new Error(String(error)));
 		},
 
 		complete() {
