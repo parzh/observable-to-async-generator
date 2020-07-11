@@ -14,7 +14,6 @@ module.exports = {
     "!<rootDir>/{src,test}/**/*.{spec,test}.ts",
   ],
   coverageDirectory: "coverage",
-  coverageProvider: "v8",
   coverageReporters: [
     "text",
     "html",
