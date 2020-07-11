@@ -21,6 +21,7 @@
   ],
   "files": [
     "/dist",
+    "!/dist/**/*.{spec,test}.*",
     "/README.md"
   ],
   "main": "dist/index.js",
