@@ -30,7 +30,8 @@
     "test": "jest",
     "start": "node --require ts-node/register src",
     "prebuild": "rm -rf dist/*",
-    "build": "tsc"
+    "build": "tsc",
+    "postbuild": "rm -rf dist/*.{spec,test}.*"
   },
   "devDependencies": {
     "@types/jest": "26.0.4",
