@@ -2,6 +2,13 @@
 
 Convert an observable to ES6 async generator.
 
+### Why `observable-to-async-generator`?
+
+- it has no dependencies;
+- it is always 100% covered with unit tests;
+- it is written in TypeScript;
+- it can be [extended with a PR](https://github.com/parzh/observable-to-async-generator/fork);
+
 # Import
 
 ```ts
