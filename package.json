@@ -6,12 +6,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parzhitsky/observable-to-async-generator.git"
+    "url": "git+https://github.com/parzh/observable-to-async-generator.git"
   },
   "bugs": {
-    "url": "https://github.com/parzhitsky/observable-to-async-generator/issues"
+    "url": "https://github.com/parzh/observable-to-async-generator/issues"
   },
-  "homepage": "https://github.com/parzhitsky/observable-to-async-generator#readme",
+  "homepage": "https://github.com/parzh/observable-to-async-generator#readme",
   "keywords": [
     "*",
     "async",
