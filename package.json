@@ -31,7 +31,8 @@
     "start": "node --require ts-node/register src",
     "prebuild": "rm -rf dist/*",
     "build": "tsc",
-    "postbuild": "rm -rf dist/*.{spec,test}.*"
+    "postbuild": "rm -rf dist/*.{spec,test}.*",
+    "prepublishOnly": "npm test && npm run build"
   },
   "devDependencies": {
     "@types/jest": "26.0.4",
