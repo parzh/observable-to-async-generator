@@ -18,11 +18,10 @@ const otag = require("observable-to-async-generator").default;
 
 ```ts
 try {
-	for await (const item of otag(observable))
+	for await (const item of otag(observable)) {
 		doSomethingWith(item);
-}
-
-catch (error) {
+	}
+} catch (error) {
 	handle(error);
 }
 ```
