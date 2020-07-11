@@ -14,11 +14,11 @@ export default async function * otag<Value>(observable: Observable<Value>): Asyn
 			result.resolve(value);
 		},
 
-		async error(error: unknown) {
+		error(error: unknown) {
 			deferred.reject(error instanceof Error ? error : new Error(String(error)));
 		},
 
-		async complete() {
+		complete() {
 			finished = true;
 			deferred.resolve();
 		},
