@@ -36,6 +36,33 @@
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "clearMocks": true,
+    "rootDir": ".",
+    "testMatch": [
+      "<rootDir>/src/**/*.{spec,test}.ts"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "<rootDir>/src/**/*.ts",
+      "!<rootDir>/{src,test}/**/*.{spec,test}.ts"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  },
   "scripts": {
     "test": "jest",
     "start": "node --require ts-node/register src",
