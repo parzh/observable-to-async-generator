@@ -35,4 +35,4 @@ try {
 
 # Notes
 
-- `rxjs@6` is a peer dependency for this package; it is primarily used to add types on the development stage. These type imports are removed from the JavaScript output, but are still present in `*.d.ts` files; in case if the type information is needed, `rxjs@6` should be installed manually.
+- `rxjs` is a peer dependency for this package; it is primarily used to add types on the development stage. These type imports are then removed from the JavaScript output, but are still present in `*.d.ts` files. In case if the type information is needed to you (for example, if your package/application is also written in TypeScript), you should install `rxjs` manually; inspect the `peerDependencies` object inside of [`observable-to-async-generator`'s `package.json` file](https://github.com/parzh/observable-to-async-generator/blob/v1.0.1-rc/package.json) to find the appropriate version of `rxjs` to install.
