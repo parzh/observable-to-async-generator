@@ -1,0 +1,70 @@
+name: Publish new release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  check-version-match:
+    name: Check versions match in package* files
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      # versions match  => equality is true  => inequality is false => Number(false) is 0 => process.exit(0)
+      # versions differ => equality is false => inequality is true  => Number(true) is 1  => process.exit(1)
+      - run: |2
+          node -e "process.exit(require('./package.json').version !== require('./package-lock.json').version)"
+
+  check-version-new:
+    name: Check version is new
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Assert version is not published
+        run: |2
+          set -e
+
+          package_name=$(node -pe "require('./package.json').name;")
+          incoming_version=$(node -pe "require('./package.json').version;")
+
+          if [ ! -z "$(npm view $package_name@$incoming_version version)" ]; then
+            echo "This version ($incoming_version) of $package_name is already published; please, update version by running 'npm version <version>'"
+            exit 1
+          fi
+
+  # TODO: maybe also check that the branch is 'main'
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-20.04
+    needs:
+      - check-version-match
+      - check-version-new
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - run: npm ci
+      - run: npm t
+
+  publish:
+    name: Publish version
+    runs-on: ubuntu-20.04
+    needs:
+      - tests
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - run: npm ci
+      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > .npmrc
+      - run: npm publish --tag latest
