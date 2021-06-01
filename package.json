@@ -72,12 +72,12 @@
     "prepublishOnly": "npm test && npm run build"
   },
   "devDependencies": {
-    "@types/jest": "26.0.4",
-    "@types/node": "14.0.20",
-    "jest": "26.1.0",
+    "@types/jest": "26.0.23",
+    "@types/node": "15.6.1",
+    "jest": "27.0.3",
     "rxjs": "6.6.7",
-    "ts-jest": "26.1.1",
-    "ts-node": "8.10.2",
+    "ts-jest": "27.0.2",
+    "ts-node": "10.0.0",
     "typescript": "3.9.6"
   },
   "peerDependencies": {
