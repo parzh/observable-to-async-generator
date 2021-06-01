@@ -2,7 +2,7 @@ import { Observable, Subject } from "rxjs";
 import otag from ".";
 
 /** @private */
-function parallel(task: ConstructorParameters<PromiseConstructor>[0]): void {
+function runInBackground(task: (finish: (result?: unknown) => void) => void): void {
 	new Promise<unknown>(task);
 }
 
@@ -18,16 +18,16 @@ it("should convert observables into async generators", () => {
 it("should allow iterating over items in observable, using `for await .. of` construct", async () => {
 	const subject = new Subject<42>();
 
-	parallel((resolve) => {
+	runInBackground((finish) => {
 		const iterations = 3;
-
-		setTimeout(() => {
-			subject.complete();
-			resolve();
-		}, 200 * (iterations + 1));
 
 		for (let i = 0; i < iterations; i++)
 			setTimeout(() => subject.next(42), 200 * i);
+
+		setTimeout(() => {
+			subject.complete();
+			finish();
+		}, 200 * (iterations + 1));
 	});
 
 	const values: 42[] = [];
@@ -46,16 +46,16 @@ test.each([
 ] as const)("should throw if observable emits %s", async (name, errorLike, caughtExpected) => {
 	const subject = new Subject<42>();
 
-	parallel((resolve) => {
+	runInBackground((finish) => {
 		const iterations = 2;
-
-		setTimeout(() => {
-			subject.error(errorLike);
-			resolve(); // not reject
-		}, 200 * (iterations + 1));
 
 		for (let i = 0; i < iterations; i++)
 			setTimeout(() => subject.next(42), 200 * i);
+
+		setTimeout(() => {
+			subject.error(errorLike);
+			finish();
+		}, 200 * (iterations + 1));
 	});
 
 	const values: 42[] = [];
