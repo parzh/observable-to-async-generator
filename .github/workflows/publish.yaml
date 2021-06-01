@@ -42,8 +42,14 @@ jobs:
   # TODO: maybe also check that the branch is 'main'
 
   test:
-    name: Run tests
-    runs-on: ubuntu-20.04
+    name: Run tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
     needs:
       - check-version-match
       - check-version-new
