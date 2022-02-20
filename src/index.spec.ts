@@ -1,4 +1,4 @@
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, concat, from, throwError } from "rxjs";
 import otag from ".";
 
 /** @private */
@@ -40,6 +40,20 @@ it("should allow iterating over items in observable, using `for await .. of` con
 	expect(values).toStrictEqual([ 42, 42, 42 ]);
 });
 
+it("should allow iterating over items in observable when several values fired at once", async () => {
+	const arr: 42[] = [ 42, 42, 42 ];
+	let observable = from(arr);
+
+	const values: 42[] = [];
+
+	for await (const value of otag(observable)) {
+		expect(value).toBe(42);
+		values.push(value);
+	}
+
+	expect(values).toStrictEqual([ 42, 42, 42 ]);
+});
+
 test.each([
 	[ "an error", new Error("Unexpected error"), new Error("Unexpected error") ],
 	[ "a string", "Unexpected error", new Error("Unexpected error") ],
@@ -62,6 +76,28 @@ test.each([
 
 	try {
 		for await (const value of otag(subject)) {
+			expect(value).toBe(42);
+			values.push(value);
+		}
+	}
+
+	catch (caught) {
+		expect(caught).toEqual(caughtExpected);
+	}
+
+	expect(values).toStrictEqual([ 42, 42 ]);
+});
+
+test.each([
+	[ "an error", new Error("Unexpected error"), new Error("Unexpected error") ],
+	[ "a string", "Unexpected error", new Error("Unexpected error") ],
+] as const)("should throw if observable emits %s when several values fired at once", async (name, errorLike, caughtExpected) => {
+	const observable = concat(from([ 42,42 ] as 42[]), throwError(errorLike))
+
+	const values: 42[] = [];
+
+	try {
+		for await (const value of otag(observable)) {
 			expect(value).toBe(42);
 			values.push(value);
 		}

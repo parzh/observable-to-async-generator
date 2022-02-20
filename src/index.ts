@@ -9,20 +9,26 @@ export default async function * otag<Value>(observable: Observable<Value>): Asyn
 
 	const subscription = observable.subscribe({
 		next(value) {
-			const result = deferred;
-			deferred = defer<Value>();
-			result.resolve(value);
+			setTimeout(() => {
+				const result = deferred;
+				deferred = defer<Value>();
+				result.resolve(value);
+			});
 		},
 
 		error(error: unknown) {
-			const result = deferred;
-			deferred = defer<Value>();
-			result.reject(error instanceof Error ? error : new Error(String(error)));
+			setTimeout(() => {
+				const result = deferred;
+				deferred = defer<Value>();
+				result.reject(error instanceof Error ? error : new Error(String(error)));
+			});
 		},
 
 		complete() {
-			finished = true;
-			deferred.resolve();
+			setTimeout(() => {
+				finished = true;
+				deferred.resolve();
+			});
 		},
 	});
 
