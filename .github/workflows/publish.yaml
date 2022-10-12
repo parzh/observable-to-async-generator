@@ -39,6 +39,18 @@ jobs:
             exit 1
           fi
 
+  check-no-deps:
+    name: Check no dependencies
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Assert 'dependencies' object in package.json is empty
+        run: |2
+          node -e "const deps = Object.keys(require('./package.json').dependencies || {}); assert.equal(deps.length, 0, 'Claimed to have no dependencies, instead found: ' + deps.join(', '))"
+
   # TODO: maybe also check that the branch is 'main'
 
   test:
@@ -53,6 +65,7 @@ jobs:
     needs:
       - check-version-match
       - check-version-new
+      - check-no-deps
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
