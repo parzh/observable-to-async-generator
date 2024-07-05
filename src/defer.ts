@@ -6,8 +6,7 @@ interface Deferred<Value = unknown> extends Promise<Value> {
 
 /** @internal */
 export default function defer<Value>(): Deferred<Value> {
-	const transit = {} as Deferred<Value>;
-
+	const transit = Object.create(null) as Deferred<Value>;
 	const promise = new Promise<Value>((resolve, reject) => {
 		Object.assign(transit, { resolve, reject });
 	});
