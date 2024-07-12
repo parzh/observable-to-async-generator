@@ -66,14 +66,22 @@
   },
   "scripts": {
     "test": "jest",
+    "lint": "eslint \"**/*.ts\"",
     "start": "node --require ts-node/register src",
     "prebuild": "rm -rf dist/*",
-    "build": "tsc",
-    "prepublishOnly": "npm test && npm run build"
+    "build": "tsc --project ./tsconfig.build.json",
+    "prepublishOnly": "npm run lint && npm test && npm run build"
   },
   "devDependencies": {
     "@types/jest": "26.0.23",
     "@types/node": "20.14.10",
+    "@typescript-eslint/eslint-plugin": "6.21.0",
+    "@typescript-eslint/parser": "6.21.0",
+    "eslint": "8.57.0",
+    "eslint-config-standard-with-typescript": "43.0.1",
+    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-n": "16.6.2",
+    "eslint-plugin-promise": "6.4.0",
     "jest": "27.0.3",
     "rxjs": "7.8.1",
     "ts-jest": "27.0.3",
