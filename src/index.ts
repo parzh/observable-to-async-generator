@@ -1,49 +1,74 @@
 //! Credit goes to https://stackoverflow.com/a/44123368/4554883
 
-import type { Observable } from "rxjs/internal/Observable";
-import defer from "./defer";
+import { type Observable, type Observer } from "rxjs";
+import defer, { type Deferred } from "./defer";
+
+/** @private */
+class Carrier<Value> implements Observer<Value> {
+	protected deferred = defer<Value>();
+	protected finished = false;
+
+	getValue(): Deferred<Value> {
+		return this.deferred;
+	}
+
+	isFinished(): boolean {
+		return this.finished;
+	}
+
+	protected spawnDeferred(): Deferred<Value> {
+		const deferred = this.deferred;
+		this.deferred = defer();
+		return deferred;
+	}
+
+	next(value: Value): void {
+		setImmediate(() => {
+			this.spawnDeferred().resolve(value);
+		});
+	}
+
+	protected convertToError(value: unknown): Error {
+		if (value instanceof Error) {
+			return value
+		}
+
+		return new Error(String(value));
+	}
+
+	error(value: unknown): void {
+		const error = this.convertToError(value);
+
+		setImmediate(() => {
+			this.spawnDeferred().reject(error);
+		});
+	}
+
+	// has to be a function expression
+	private readonly doComplete = () => {
+		this.finished = true;
+		this.deferred.resolve();
+	};
+
+	complete(): void {
+		setImmediate(this.doComplete);
+	}
+}
 
 export default async function * otag<Value>(observable: Observable<Value>): AsyncIterableIterator<Value> {
-	let deferred = defer<Value>();
-	let finished = false;
-
-	const subscription = observable.subscribe({
-		next(value) {
-			setImmediate(() => {
-				const result = deferred;
-				deferred = defer<Value>();
-				result.resolve(value);
-			});
-		},
-
-		error(error: unknown) {
-			setImmediate(() => {
-				const result = deferred;
-				deferred = defer<Value>();
-				result.reject(error instanceof Error ? error : new Error(String(error)));
-			});
-		},
-
-		complete() {
-			setImmediate(() => {
-				finished = true;
-				deferred.resolve();
-			});
-		},
-	});
+	const valueCarrier = new Carrier<Value>();
+	const subscription = observable.subscribe(valueCarrier);
 
 	try {
 		while (true) {
-			const value = await deferred;
+			const value = await valueCarrier.getValue();
 
-			if (finished)
+			if (valueCarrier.isFinished())
 				break;
 
 			yield value;
 		}
-	}
-
-	finally {
+	} finally {
 		subscription.unsubscribe();
 	}
 }
