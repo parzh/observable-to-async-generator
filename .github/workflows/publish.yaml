@@ -10,7 +10,7 @@ jobs:
     name: Check versions match in package* files
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
@@ -23,7 +23,7 @@ jobs:
     name: Check version is new
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
@@ -43,7 +43,7 @@ jobs:
     name: Check no dependencies
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
@@ -60,7 +60,7 @@ jobs:
       - check-no-deps
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
@@ -79,7 +79,7 @@ jobs:
     needs:
       - lint
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
@@ -92,7 +92,7 @@ jobs:
     needs:
       - test
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
