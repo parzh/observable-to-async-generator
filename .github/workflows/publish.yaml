@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '/.npmrc'
+          node-version-file: '/.nvmrc'
       # versions match  => equality is true  => inequality is false => Number(false) is 0 => process.exit(0)
       # versions differ => equality is false => inequality is true  => Number(true) is 1  => process.exit(1)
       - run: |2
@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '/.npmrc'
+          node-version-file: '/.nvmrc'
       - name: Assert version is not published
         run: |2
           set -e
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '/.npmrc'
+          node-version-file: '/.nvmrc'
       - name: Assert 'dependencies' object in package.json is empty
         run: |2
           node -e "const deps = Object.keys(require('./package.json').dependencies || {}); assert.equal(deps.length, 0, 'Claimed to have no dependencies, instead found: ' + deps.join(', '))"
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '/.npmrc'
+          node-version-file: '/.nvmrc'
       - run: npm ci
       - run: npm run lint
 
@@ -82,7 +82,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '/.npmrc'
+          node-version-file: '/.nvmrc'
       - run: npm ci
       - run: npm t
 
@@ -95,7 +95,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '/.npmrc'
+          node-version-file: '/.nvmrc'
       - run: npm ci
       - run: npm run build
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > .npmrc
