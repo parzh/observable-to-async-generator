@@ -7,7 +7,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "standard-with-typescript"
+    "love"
   ],
   "plugins": ["@typescript-eslint"],
   "parser": "@typescript-eslint/parser",
