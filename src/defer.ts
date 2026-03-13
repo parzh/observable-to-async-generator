@@ -7,9 +7,9 @@ export interface Deferred<Value = unknown> extends Promise<Value> {
 /** @internal */
 // eslint-disable-next-line @typescript-eslint/promise-function-async
 export default function defer<Value>(): Deferred<Value> {
-  const transit = Object.create(null)
+  const transit = Object.create(null) as Deferred<Value>
   const promise = new Promise<Value>((resolve, reject) => {
-    Object.assign(transit, { resolve, reject })
+    void Object.assign(transit, { resolve, reject })
   })
 
   return Object.assign(promise, transit)
