@@ -8,7 +8,6 @@ class Carrier<Value> implements Observer<Value> {
   protected deferred = defer<Value>()
   protected finished = false
 
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
   getValue(): Deferred<Value> {
     return this.deferred
   }
