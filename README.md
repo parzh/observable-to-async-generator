@@ -22,7 +22,7 @@ import otag from "observable-to-async-generator";
 CommonJS:
 
 ```js
-const otag = require("observable-to-async-generator");
+const otag = require("observable-to-async-generator").default;
 ```
 
 # Usage
