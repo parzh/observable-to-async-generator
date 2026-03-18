@@ -25,6 +25,8 @@ CommonJS:
 const otag = require("observable-to-async-generator");
 ```
 
+In CommonJS, `require("observable-to-async-generator")` resolves directly to the `otag` function.
+
 # Usage
 
 ```ts
