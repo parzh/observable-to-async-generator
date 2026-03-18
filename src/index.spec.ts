@@ -5,4 +5,8 @@ describe('default namespace (indexfile)', () => {
   it('should contain the `otag` function as its default entity', () => {
     expect(indexfile.default).toBe(otag)
   })
+
+  it('should contain the `otag` function as a named export', () => {
+    expect(indexfile.otag).toBe(otag)
+  })
 })
