@@ -75,7 +75,7 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint \"**/*.ts\"",
-    "prebuild": "rm -rf dist",
+    "prebuild": "rm -rf dist/*",
     "build": "vite build"
   },
   "devDependencies": {
