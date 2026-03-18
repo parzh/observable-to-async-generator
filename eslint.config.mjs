@@ -64,7 +64,7 @@ export default [
       "@typescript-eslint/space-before-function-paren": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",
       "@typescript-eslint/no-misused-promises": "off",
-      "@typescript-eslint/promise-function-async": "error",
+      "@typescript-eslint/promise-function-async": "off",
       "@typescript-eslint/restrict-template-expressions": "off",
       "@typescript-eslint/method-signature-style": "off",
 

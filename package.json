@@ -34,8 +34,15 @@
     "!/dist/**/*.{spec,test}.*",
     "/README.md"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "module": "./dist/index.js",
+      "default": "./dist/index.cjs"
+    }
+  },
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
@@ -68,7 +75,7 @@
     "test": "jest",
     "lint": "eslint \"**/*.ts\"",
     "prebuild": "rm -rf dist/*",
-    "build": "tsc --project ./tsconfig.build.json"
+    "build": "vite build"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.5",
@@ -86,7 +93,9 @@
     "jest": "30.3.0",
     "rxjs": "7.8.2",
     "ts-jest": "29.4.6",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vite": "7.1.12",
+    "vite-plugin-dts": "4.5.4"
   },
   "peerDependencies": {
     "rxjs": "6 || 7"
