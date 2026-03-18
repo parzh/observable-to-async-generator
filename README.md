@@ -11,9 +11,9 @@ Convert an observable to ES6 async generator.
 
 # Import
 
-`observable-to-async-generator` supports both ESM and CJS (CommonJS).
+`observable-to-async-generator` supports both ECMAScript Modules and CommonJS.
 
-ESM:
+ECMAScript Modules:
 
 ```ts
 import otag from "observable-to-async-generator";
@@ -24,8 +24,6 @@ CommonJS:
 ```js
 const otag = require("observable-to-async-generator");
 ```
-
-In CommonJS, `require("observable-to-async-generator")` resolves directly to the `otag` function.
 
 # Usage
 
