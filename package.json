@@ -30,6 +30,11 @@
     "yield *"
   ],
   "type": "module",
+  "files": [
+    "/dist",
+    "!/dist/**/*.{spec,test}.*",
+    "/README.md"
+  ],
   "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
   "exports": {
