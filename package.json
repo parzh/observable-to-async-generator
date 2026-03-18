@@ -29,7 +29,6 @@
     "yield*",
     "yield *"
   ],
-  "type": "module",
   "files": [
     "/dist",
     "!/dist/**/*.{spec,test}.*",
