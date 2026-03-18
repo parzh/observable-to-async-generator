@@ -1,10 +1,8 @@
-/** @internal */
 export interface Deferred<Value = unknown> extends Promise<Value> {
   resolve(value?: Value): void
   reject(error: Error): void
 }
 
-/** @internal */
 export default function defer<Value>(): Deferred<Value> {
   const transit = Object.create(null) as Deferred<Value>
   const promise = new Promise<Value>((resolve, reject) => {
@@ -13,3 +11,5 @@ export default function defer<Value>(): Deferred<Value> {
 
   return Object.assign(promise, transit)
 }
+
+export { defer }

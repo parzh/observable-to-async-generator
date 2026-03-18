@@ -1,7 +1,7 @@
 //! Credit goes to https://stackoverflow.com/a/44123368/4554883
 
 import { type Observable, type Observer } from 'rxjs'
-import defer, { type Deferred } from './defer'
+import { defer, type Deferred } from './defer'
 
 /** @private */
 class Carrier<Value> implements Observer<Value> {
@@ -16,7 +16,6 @@ class Carrier<Value> implements Observer<Value> {
     return this.finished
   }
 
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
   protected spawnDeferred(): Deferred<Value> {
     const deferred = this.deferred
     this.deferred = defer()
