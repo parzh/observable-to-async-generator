@@ -11,7 +11,7 @@ Convert an observable to ES6 async generator.
 
 # Import
 
-`observable-to-async-generator` supports both ESM and CommonJS.
+`observable-to-async-generator` supports both ESM and CJS (CommonJS).
 
 ESM:
 
