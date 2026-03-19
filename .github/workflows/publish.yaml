@@ -1,57 +1,110 @@
 name: Publish new release
+
 permissions:
-  contents: read
+  contents: write
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - main
 
 jobs:
+  package-info:
+    name: Gather package info
+    runs-on: ubuntu-latest
+    outputs:
+      PACKAGE_NAME: ${{ steps.info.outputs.PACKAGE_NAME }}
+      PACKAGE_VERSION: ${{ steps.info.outputs.PACKAGE_VERSION }}
+      PACKAGE_LOCK_VERSION: ${{ steps.info.outputs.PACKAGE_LOCK_VERSION }}
+      DEPS_FOUND: ${{ steps.info.outputs.DEPS_FOUND }}
+      VERSION_CHANGED: ${{ steps.info.outputs.VERSION_CHANGED }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+      - id: info
+        name: Inspect package files
+        run: |2
+          PACKAGE_NAME=$(jq -r .name package.json)
+          PACKAGE_VERSION=$(jq -r .version package.json)
+          PACKAGE_LOCK_VERSION=$(jq -r .version package-lock.json)
+          DEPS_FOUND=$(jq -r '(.dependencies // {}) | keys | join(", ")' package.json)
+
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> "$GITHUB_OUTPUT"
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "PACKAGE_LOCK_VERSION=$PACKAGE_LOCK_VERSION" >> "$GITHUB_OUTPUT"
+          echo "DEPS_FOUND=$DEPS_FOUND" >> "$GITHUB_OUTPUT"
+
+          if git diff HEAD~1 HEAD package.json 2>/dev/null | grep -Eq '^[+-]\s*"version":'; then
+            echo "VERSION_CHANGED=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  check-version-changed:
+    name: Check publish conditions
+    runs-on: ubuntu-latest
+    needs: package-info
+    steps:
+      - name: Validate version change
+        env:
+          VERSION_CHANGED: ${{ needs.package-info.outputs.VERSION_CHANGED }}
+          PACKAGE_VERSION: ${{ needs.package-info.outputs.PACKAGE_VERSION }}
+        run: |2
+          if [ "$VERSION_CHANGED" != "true" ]; then
+            echo "::notice title=Publish Skipped::Version was unchanged, so no new release will trigger."
+          else
+            echo "::notice title=Version Changed::New version "$PACKAGE_VERSION" will be published."
+          fi
+
   check-version-match:
+    needs: package-info
+    if: needs.package-info.outputs.VERSION_CHANGED == 'true'
     name: Check versions match in package* files
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: '/.nvmrc'
-      # versions match  => equality is true  => inequality is false => Number(false) is 0 => process.exit(0)
-      # versions differ => equality is false => inequality is true  => Number(true) is 1  => process.exit(1)
-      - run: |2
-          node -e "process.exit(require('./package.json').version !== require('./package-lock.json').version)"
+      - name: Assert versions match in package.json and package-lock.json
+        env:
+          PACKAGE_VERSION: ${{ needs.package-info.outputs.PACKAGE_VERSION }}
+          PACKAGE_LOCK_VERSION: ${{ needs.package-info.outputs.PACKAGE_LOCK_VERSION }}
+        run: |2
+          if [ "$PACKAGE_VERSION" != "$PACKAGE_LOCK_VERSION" ]; then
+            echo "Version in package.json ($PACKAGE_VERSION) does not match version in package-lock.json ($PACKAGE_LOCK_VERSION)" >&2
+            exit 1
+          fi
 
   check-version-new:
+    needs: package-info
+    if: needs.package-info.outputs.VERSION_CHANGED == 'true'
     name: Check version is new
     runs-on: ubuntu-latest
+    env:
+      PACKAGE_VERSION: ${{ needs.package-info.outputs.PACKAGE_VERSION }}
+      PACKAGE_NAME: ${{ needs.package-info.outputs.PACKAGE_NAME }}
     steps:
-      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: '/.nvmrc'
       - name: Assert version is not published
         run: |2
           set -e
-
-          package_name=$(node -pe "require('./package.json').name;")
-          incoming_version=$(node -pe "require('./package.json').version;")
-
-          if [ ! -z "$(npm view $package_name@$incoming_version version)" ]; then
-            echo "This version ($incoming_version) of $package_name is already published; please, update version by running 'npm version <version>'"
+          if [ ! -z "$(npm view $PACKAGE_NAME@$PACKAGE_VERSION version)" ]; then
+            echo "This version ($PACKAGE_VERSION) of $PACKAGE_NAME is already published. Please, update version by running 'npm version <version>'." >&2
             exit 1
           fi
 
   check-no-deps:
+    needs: package-info
+    if: needs.package-info.outputs.VERSION_CHANGED == 'true'
     name: Check no dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: '/.nvmrc'
       - name: Assert 'dependencies' object in package.json is empty
+        env:
+          DEPS_FOUND: ${{ needs.package-info.outputs.DEPS_FOUND }}
         run: |2
-          node -e "const deps = Object.keys(require('./package.json').dependencies || {}); assert.equal(deps.length, 0, 'Claimed to have no dependencies, instead found: ' + deps.join(', '))"
+          if [ -n "$DEPS_FOUND" ]; then
+            echo "Claimed to have no dependencies, instead found: $DEPS_FOUND" >&2
+            exit 1
+          fi
 
   # TODO: maybe also check that the branch is 'main'
 
@@ -108,3 +161,24 @@ jobs:
       - run: npm run build
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > .npmrc
       - run: npm publish --tag latest
+
+  add-tag:
+    name: Add version tag
+    runs-on: ubuntu-latest
+    needs:
+      - publish
+      - package-info
+    steps:
+      - uses: actions/checkout@v6
+      - name: Add version tag
+        env:
+          PACKAGE_VERSION: ${{ needs.package-info.outputs.PACKAGE_VERSION }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_USER_NAME: Publish workflow
+          GIT_USER_EMAIL: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com
+        run: |2
+          set -e
+          git config user.name "$GIT_USER_NAME"
+          git config user.email "$GIT_USER_EMAIL"
+          git tag -a "v$PACKAGE_VERSION" -m "Release v$PACKAGE_VERSION"
+          git push origin --tags
