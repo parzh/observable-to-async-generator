@@ -10,7 +10,7 @@ on:
 jobs:
   check-version-match:
     name: Check versions match in package* files
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -23,7 +23,7 @@ jobs:
 
   check-version-new:
     name: Check version is new
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -43,7 +43,7 @@ jobs:
 
   check-no-deps:
     name: Check no dependencies
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -60,7 +60,7 @@ jobs:
       - check-version-match
       - check-version-new
       - check-no-deps
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -96,7 +96,7 @@ jobs:
 
   publish:
     name: Publish version
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs:
       - test
     steps:
