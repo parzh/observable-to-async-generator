@@ -39,15 +39,10 @@ jobs:
             echo "VERSION_CHANGED=true" >> "$GITHUB_OUTPUT"
           fi
 
-  check-version-changed:
-    name: Check publish conditions
-    runs-on: ubuntu-latest
-    needs: package-info
-    steps:
       - name: Validate version change
         env:
-          VERSION_CHANGED: ${{ needs.package-info.outputs.VERSION_CHANGED }}
-          PACKAGE_VERSION: ${{ needs.package-info.outputs.PACKAGE_VERSION }}
+          VERSION_CHANGED: ${{ steps.info.outputs.VERSION_CHANGED }}
+          PACKAGE_VERSION: ${{ steps.info.outputs.PACKAGE_VERSION }}
         run: |2
           if [ "$VERSION_CHANGED" != "true" ]; then
             echo "::notice title=Publish Skipped::Version was unchanged, so no new release will trigger."
