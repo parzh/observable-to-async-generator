@@ -52,7 +52,7 @@
   },
   "scripts": {
     "test": "vitest run --coverage",
-    "lint": "eslint \"**/*.ts\"",
+    "lint": "eslint --config eslint.config.ts \"**/*.ts\"",
     "build": "tsup && rm -f dist/*.d.cts"
   },
   "devDependencies": {
