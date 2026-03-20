@@ -52,7 +52,7 @@
   },
   "scripts": {
     "test": "vitest run --coverage",
-    "lint": "eslint \"**/*.ts\"",
+    "lint": "eslint --config eslint.config.ts \"**/*.ts\"",
     "build": "tsup && rm -f dist/*.d.cts"
   },
   "devDependencies": {
@@ -69,6 +69,7 @@
     "eslint-plugin-n": "17.24.0",
     "eslint-plugin-promise": "7.2.1",
     "globals": "16.5.0",
+    "jiti": "2.6.1",
     "rxjs": "7.8.2",
     "tsup": "8.5.1",
     "typescript": "5.9.3",
