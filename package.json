@@ -74,8 +74,7 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint \"**/*.ts\"",
-    "prebuild": "rm -rf dist/*",
-    "build": "vite build"
+    "build": "tsup"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.5",
@@ -93,9 +92,8 @@
     "jest": "30.3.0",
     "rxjs": "7.8.2",
     "ts-jest": "29.4.6",
-    "typescript": "5.9.3",
-    "vite": "7.1.12",
-    "vite-plugin-dts": "4.5.4"
+    "tsup": "8.5.1",
+    "typescript": "5.9.3"
   },
   "peerDependencies": {
     "rxjs": "6 || 7"
