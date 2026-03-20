@@ -1,17 +1,17 @@
 import { defineConfig } from 'tsup'
-import { resolve } from 'path'
-import { peerDependencies } from './package.json'
+import { fileURLToPath } from 'url'
+import pkg from './package.json' with { type: 'json' }
 
 export default defineConfig({
   clean: true,
-  entry: {
-    index: resolve(__dirname, 'src/index.ts'),
-  },
+  entry: [
+    fileURLToPath(new URL('src/index.ts', import.meta.url)),
+  ],
   format: ['cjs', 'esm'],
   dts: true,
   sourcemap: true,
   minify: true,
-  external: Object.keys(peerDependencies),
+  external: Object.keys(pkg.peerDependencies),
   outExtension: ({ format }) => ({
     js: format === 'esm' ? '.js' : '.cjs',
   }),

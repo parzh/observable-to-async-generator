@@ -1,4 +1,5 @@
-import defer from './defer'
+import { describe, expect, it } from 'vitest'
+import { defer } from './defer.js'
 
 describe(defer, () => {
   it('should create a Promise-like object with exposed `.resolve()` and `.reject()`', () => {
@@ -9,28 +10,26 @@ describe(defer, () => {
     expect(deferred).toHaveProperty('reject', expect.any(Function))
   })
 
-  it('should allow manually resolving the promise', (done) => {
+  it('should allow manually resolving the promise', async () => {
     const deferred = defer<42>()
 
-    void deferred
-      .then((value) => {
-        expect(value).toBe(42)
-      })
-      .finally(done)
-
     deferred.resolve(42)
+
+    const value = await deferred
+    expect(value).toBe(42)
   })
 
-  it('should allow manually rejecting the promise', (done) => {
+  it('should allow manually rejecting the promise', async () => {
     const error = new Error('Unexpected error')
     const deferred = defer<unknown>()
 
-    void deferred
-      .catch((caught: Error) => {
-        expect(caught).toBe(error)
-      })
-      .finally(done)
-
     deferred.reject(error)
+
+    try {
+      await deferred
+      throw new Error('should have thrown')
+    } catch (caught) {
+      expect(caught).toBe(error)
+    }
   })
 })

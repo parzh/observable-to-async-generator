@@ -1,7 +1,7 @@
 //! Credit goes to https://stackoverflow.com/a/44123368/4554883
 
 import { type Observable, type Observer } from 'rxjs'
-import { defer, type Deferred } from './defer'
+import { defer, type Deferred } from './defer.js'
 
 /** @private */
 class Carrier<Value> implements Observer<Value> {

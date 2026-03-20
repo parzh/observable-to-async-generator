@@ -1,6 +1,7 @@
-import { defer } from './defer'
-import { otag } from './otag'
-import * as indexfile from '.'
+import { describe, expect, it } from 'vitest'
+import { defer } from './defer.js'
+import { otag } from './otag.js'
+import * as indexfile from './index.js'
 
 describe('default namespace (indexfile)', () => {
   it('should contain the `otag` function as its default entity', () => {

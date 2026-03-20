@@ -1,5 +1,6 @@
+import { describe, expect, it, test } from 'vitest'
 import { Observable, Subject, concat, from, throwError } from 'rxjs'
-import { otag } from './otag'
+import { otag } from './otag.js'
 
 /** @private */
 function createSubject(): Observable<42> {
@@ -51,7 +52,7 @@ describe(otag, () => {
     expect(generator).toHaveProperty('next', expect.any(Function))
     expect(generator).toHaveProperty('return', expect.any(Function))
     expect(generator).toHaveProperty('throw', expect.any(Function))
-    expect(generator).toHaveProperty([Symbol.asyncIterator], expect.any(Function))
+    expect(generator[Symbol.asyncIterator]).toBeTypeOf('function')
   })
 
   it('should allow iterating over items in observable, using `for await .. of` construct', async () => {
