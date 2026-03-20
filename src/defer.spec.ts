@@ -15,8 +15,7 @@ describe(defer, () => {
 
     deferred.resolve(42)
 
-    const value = await deferred
-    expect(value).toBe(42)
+    await expect(deferred).resolves.toBe(42)
   })
 
   it('should allow manually rejecting the promise', async () => {
@@ -25,11 +24,6 @@ describe(defer, () => {
 
     deferred.reject(error)
 
-    try {
-      await deferred
-      throw new Error('should have thrown')
-    } catch (caught) {
-      expect(caught).toBe(error)
-    }
+    await expect(deferred).rejects.toBe(error)
   })
 })
