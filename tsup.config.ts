@@ -4,9 +4,9 @@ import { peerDependencies } from './package.json'
 
 export default defineConfig({
   clean: true,
-  entry: [
-    resolve(__dirname, 'src/index.ts'),
-  ],
+  entry: {
+    index: resolve(__dirname, 'src/index.ts'),
+  },
   format: ['cjs', 'esm'],
   dts: true,
   sourcemap: true,
