@@ -75,6 +75,7 @@ jobs:
       PACKAGE_VERSION: ${{ needs.package-info.outputs.PACKAGE_VERSION }}
       PACKAGE_NAME: ${{ needs.package-info.outputs.PACKAGE_NAME }}
     steps:
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: '/.nvmrc'
