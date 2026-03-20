@@ -6,7 +6,7 @@ export default defineConfig({
       provider: 'istanbul',
       reporter: ['text', 'html'],
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.spec.ts', 'test/**/*.ts'],
+      exclude: ['src/**/*.{spec,test}.ts'],
       thresholds: {
         100: true,
       },
