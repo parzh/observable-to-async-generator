@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     // Output
-    "target": "es2020",
-    "module": "commonjs",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "useDefineForClassFields": false,
     "noEmit": true, // TODO: override in the derived configs if needed
     "sourceMap": true,

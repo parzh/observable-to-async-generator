@@ -1,28 +1,20 @@
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { describe, expect, it } from 'vitest'
+import pkg from '../package.json' with { type: 'json' }
 
 describe('package.json exports', () => {
+  // FIXME: this is sloppy, change to E2E test with mock packages for ESM and CJS
   it('should resolve ESM, CJS and types entrypoints for the root export', () => {
-    const packageJsonPath = resolve(__dirname, '../package.json')
-    const packageJsonContents = readFileSync(packageJsonPath, 'utf8')
-    const packageJson = JSON.parse(packageJsonContents) as {
-      main: string
-      types: string
-      exports: {
-        '.': {
-          types: string
-          module: string
-          default: string
-        }
-      }
-    }
-
-    expect(packageJson.main).toBe('dist/index.cjs')
-    expect(packageJson.types).toBe('dist/index.d.ts')
-    expect(packageJson.exports['.']).toEqual({
-      types: './dist/index.d.ts',
-      module: './dist/index.js',
-      default: './dist/index.cjs',
+    expect(pkg.main).toBe('dist/index.cjs')
+    expect(pkg.types).toBe('dist/index.d.ts')
+    expect(pkg.exports['.']).toEqual({
+      import: {
+        types: './dist/index.d.ts',
+        default: './dist/index.js',
+      },
+      require: {
+        types: './dist/index.d.ts',
+        default: './dist/index.cjs',
+      },
     })
   })
 })
