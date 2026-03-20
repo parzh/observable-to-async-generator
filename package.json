@@ -33,21 +33,27 @@
   "files": [
     "/dist",
     "!/dist/**/*.{spec,test}.*",
+    "!/dist/**/*.d.cts",
     "/README.md"
   ],
   "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "module": "./dist/index.js",
-      "default": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "scripts": {
     "test": "vitest run --coverage",
     "lint": "eslint \"**/*.ts\"",
-    "build": "tsup"
+    "build": "tsup && rm -f dist/*.d.cts"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.5",

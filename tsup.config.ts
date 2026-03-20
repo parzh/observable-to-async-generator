@@ -14,6 +14,7 @@ export default defineConfig({
   external: Object.keys(pkg.peerDependencies),
   outExtension: ({ format }) => ({
     js: format === 'esm' ? '.js' : '.cjs',
+    // dts: '.d.ts', // TODO: use this when it is fixed: https://github.com/egoist/tsup/issues/939
   }),
   esbuildOptions(options) {
     options.keepNames = true
