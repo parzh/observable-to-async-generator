@@ -58,7 +58,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "3.3.5",
     "@eslint/js": "9.39.4",
-    "@types/eslint__eslintrc": "2.1.2",
+    "@types/eslint__eslintrc": "3.3.0",
     "@types/node": "^24",
     "@typescript-eslint/eslint-plugin": "8.57.0",
     "@typescript-eslint/parser": "8.57.0",
