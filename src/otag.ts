@@ -2,6 +2,7 @@
 
 import { type Observable, type Observer } from 'rxjs'
 import { Flow } from './flow.js'
+import { Queue } from './queue.js'
 
 /** @private */
 const completion = {
@@ -12,7 +13,7 @@ const completion = {
 /** @private */
 class Carrier<Value> implements Observer<Value> {
   protected readonly flow = new Flow()
-  protected readonly values: Value[] = []
+  protected readonly queue = new Queue<Value>()
   protected valueError?: Error
   protected completed = false
 
@@ -25,7 +26,7 @@ class Carrier<Value> implements Observer<Value> {
   }
 
   async getValue(): Promise<IteratorResult<Value>> {
-    while (this.values.length === 0) {
+    while (this.queue.isEmpty) {
       if (this.completed) {
         return this.getCompletion()
       }
@@ -35,12 +36,12 @@ class Carrier<Value> implements Observer<Value> {
 
     return {
       done: false,
-      value: this.values.shift()!, // TODO: use pointers
+      value: this.queue.dequeue()!,
     }
   }
 
   next(value: Value): void {
-    this.values.push(value)
+    this.queue.enqueue(value)
     this.flow.resume()
   }
 
