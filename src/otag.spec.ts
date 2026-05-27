@@ -98,4 +98,43 @@ describe(otag, () => {
 
     expect(values).toStrictEqual([42, 42, 42])
   })
+
+  it('should ignore emissions after completion or error', async () => {
+    const subject = new Subject<number>()
+    const iterator = otag(subject)
+
+    const firstPromise = iterator.next()
+
+    subject.next(1)
+    subject.complete()
+    subject.next(2)
+    subject.error(new Error('Unexpected error'))
+    subject.complete()
+
+    const first = await firstPromise
+
+    expect(first.value).toBe(1)
+    expect(first.done).toBe(false)
+
+    const second = await iterator.next()
+
+    expect(second.done).toBe(true)
+  })
+
+  it('should unsubscribe from the observable if the generator is cancelled early', async () => {
+    using unsubscribe = vi.fn()
+    const observable = new Observable<number>((subscriber) => {
+      subscriber.next(1)
+      subscriber.next(2)
+
+      return unsubscribe
+    })
+
+    for await (const value of otag(observable)) {
+      expect(value).toBe(1)
+      break
+    }
+
+    expect(unsubscribe).toHaveBeenCalled()
+  })
 })
