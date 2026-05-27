@@ -1,6 +1,6 @@
-import { describe, expect, it, test } from 'vitest'
+import { describe, expect, it, test, vi } from 'vitest'
 import { Observable, Subject, concat, from, throwError } from 'rxjs'
-import { setInterval } from 'timers/promises'
+import { setTimeout, setInterval } from 'timers/promises'
 import { otag } from './otag.js'
 
 /** @private */
@@ -87,5 +87,18 @@ describe(otag, () => {
 
       expect(values).toStrictEqual([42, 42, 42])
     }
+  })
+
+  it('should not drop values when the consumer is slower than the observable', async () => {
+    const observable = createObservable()
+    const values: Array<42> = []
+
+    for await (const value of otag(observable)) {
+      values.push(value)
+
+      await setTimeout(20)
+    }
+
+    expect(values).toStrictEqual([42, 42, 42])
   })
 })
