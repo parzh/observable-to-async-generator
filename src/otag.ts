@@ -11,17 +11,12 @@ const completion = {
 } as const satisfies IteratorResult<unknown>
 
 /** @private */
-interface CarrierParams extends QueueParams {
-}
-
-/** @private */
 class Carrier<Value> implements Observer<Value> {
   protected readonly flow = new Flow()
-  protected readonly queue = new Queue<Value>(this.params)
   protected valueError?: Error
   protected completed = false
 
-  constructor(protected readonly params?: CarrierParams) {}
+  constructor(protected readonly queue: Queue<Value>) {}
 
   private getCompletion(): IteratorResult<Value> {
     if (this.valueError) {
@@ -70,11 +65,12 @@ class Carrier<Value> implements Observer<Value> {
   }
 }
 
-export interface Params extends CarrierParams {
+export interface Params extends QueueParams {
 }
 
 export async function * otag<Value>(observable: Observable<Value>, params?: Params): AsyncIterableIterator<Value> {
-  const valueCarrier = new Carrier<Value>(params)
+  const transitQueue = new Queue<Value>(params)
+  const valueCarrier = new Carrier<Value>(transitQueue)
   const subscription = observable.subscribe(valueCarrier)
 
   try {
