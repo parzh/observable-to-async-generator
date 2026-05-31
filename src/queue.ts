@@ -50,8 +50,8 @@ export class Queue<Item> {
   dequeue(): Item {
     const item = this.items[this.start.value]
 
-    delete this.items[this.start.value++] // eslint-disable-line @typescript-eslint/no-array-delete
-
+    this.items[this.start.value] = undefined as unknown as Item
+    this.start.value += 1
     this.pruner.schedulePruneIfNeeded()
 
     return item
