@@ -2,7 +2,7 @@
 
 import { type Observable, type Observer } from 'rxjs'
 import { Flow } from './flow/flow.js'
-import { Queue, QueueParams } from './queue/queue.js'
+import { Queue } from './queue/queue.js'
 
 /** @private */
 const completion = {
@@ -65,11 +65,8 @@ class Carrier<Value> implements Observer<Value> {
   }
 }
 
-export interface Params extends QueueParams {
-}
-
-export async function * otag<Value>(observable: Observable<Value>, params?: Params): AsyncIterableIterator<Value> {
-  const transitQueue = new Queue<Value>(params)
+export async function * otag<Value>(observable: Observable<Value>): AsyncIterableIterator<Value> {
+  const transitQueue = new Queue<Value>()
   const valueCarrier = new Carrier<Value>(transitQueue)
   const subscription = observable.subscribe(valueCarrier)
 

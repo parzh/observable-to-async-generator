@@ -1,90 +1,130 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { Queue, QueueOverflowError } from './queue.js'
-import { MAX_ARRAY_LENGTH } from './validateMaxDanglingItems.js'
+
+const MAX_ARRAY_LENGTH = 2 ** 32 - 1 // I don't want to `export` it just for tests
 
 class QueueTest extends Queue<number> {
-  get startValue(): number {
-    return this.start.value
+  get meta() {
+    // it's highly non-performant to create an object each time, but it for tests, so it's fine
+    return {
+      capacity: this.list.length,
+      head: this.head,
+      tail: this.tail,
+      size: this.size,
+    }
   }
 
   fillToMax() {
-    this.items.length = MAX_ARRAY_LENGTH - 1
-    this.start.value = 0
+    this.list = new Array<number>(MAX_ARRAY_LENGTH)
+    this.head = 0
+    this.tail = 0
+    this.size = MAX_ARRAY_LENGTH
   }
 
-  simulateNearMax() {
-    this.items.length = MAX_ARRAY_LENGTH - 1
-    this.start.value = MAX_ARRAY_LENGTH - 2
+  setEmptyCapacity() {
+    this.list = []
+    this.head = 0
+    this.tail = 0
+    this.size = 0
   }
 }
 
 describe(Queue, () => {
   it('should be empty initially', () => {
-    const queue = new Queue<number>()
+    const queue = new QueueTest()
 
     expect(queue.isEmpty).toBe(true)
+    expect(queue.meta.size).toBe(0)
   })
 
   it('should enqueue and dequeue items in FIFO order', () => {
-    const queue = new Queue<number>()
+    const queue = new QueueTest()
 
     queue.enqueue(1)
 
     expect(queue.isEmpty).toBe(false)
+    expect(queue.meta.size).toBe(1)
 
     queue.enqueue(2)
     queue.enqueue(3)
 
+    expect(queue.meta.size).toBe(3)
+
     expect(queue.dequeue()).toBe(1)
-    expect(queue.isEmpty).toBe(false)
+    expect(queue.meta.size).toBe(2)
 
     expect(queue.dequeue()).toBe(2)
-    expect(queue.isEmpty).toBe(false)
+    expect(queue.meta.size).toBe(1)
 
     expect(queue.dequeue()).toBe(3)
     expect(queue.isEmpty).toBe(true)
+    expect(queue.meta.size).toBe(0)
   })
 
-  it('should prune dangling items in the background when they reach 100 items', async () => {
-    vi.useFakeTimers()
-    vi.stubGlobal('requestIdleCallback', undefined)
-    vi.resetModules()
-
-    const { Queue } = await import('./queue.js')
-
-    class QueueTest extends Queue<number> {
-      get startValue(): number {
-        return this.start.value
-      }
-    }
-
+  it('should wrap around the array', () => {
     const queue = new QueueTest()
+    const capacity = queue.meta.capacity
 
-    for (let i = 0; i < 101; i++) {
+    for (let i = 0; i < capacity - 1; i++) {
       queue.enqueue(i)
     }
 
-    for (let i = 0; i < 100; i++) {
-      expect(queue.dequeue()).toBe(i)
+    queue.dequeue()
+    queue.dequeue()
+    queue.enqueue(100)
+    queue.enqueue(101)
+
+    expect(queue.meta.capacity).toBe(capacity)
+    expect(queue.meta.tail).toBeLessThan(queue.meta.head)
+  })
+
+  it('should grow when full', () => {
+    const queue = new QueueTest()
+    const capacity = queue.meta.capacity
+
+    for (let i = 0; i < capacity; i++) {
+      queue.enqueue(i)
     }
 
-    expect(queue.startValue).toBe(100)
+    expect(queue.meta.capacity).toBe(capacity)
 
-    vi.runAllTimers()
+    queue.enqueue(capacity)
 
-    expect(queue.startValue).toBe(0)
+    expect(queue.meta.capacity).toBe(capacity * 2)
+    expect(queue.meta.size).toBe(capacity + 1)
+
+    for (let i = 0; i <= capacity; i++) {
+      expect(queue.dequeue()).toBe(i)
+    }
   })
 
-  it('should salvage prune the queue if the array is full but dangling items are present', () => {
+  it('should maintain elements correctly when growing from a wrapped state', () => {
     const queue = new QueueTest()
+    const capacity = queue.meta.capacity
 
-    queue.simulateNearMax()
+    for (let i = 0; i < capacity; i++) {
+      queue.enqueue(i)
+    }
 
-    expect(() => queue.enqueue(1)).not.toThrow()
-    expect(queue.startValue).toBe(0)
+    queue.dequeue()
+    queue.dequeue()
+    queue.enqueue(capacity)
+    queue.enqueue(capacity + 1)
+
+    expect(queue.meta.tail).toBe(queue.meta.head)
+
+    queue.enqueue(capacity + 2)
+
+    expect(queue.meta.capacity).toBe(capacity * 2)
+    expect(queue.meta.head).toBe(0)
+    expect(queue.meta.tail).toBe(queue.meta.size)
+
+    for (let i = 2; i <= capacity + 2; i++) {
+      expect(queue.dequeue()).toBe(i)
+    }
   })
 
-  it('should throw QueueOverflowError if the array is full and no dangling items are present', () => {
+  it('should throw QueueOverflowError if the array is full and cannot grow further', () => {
     const queue = new QueueTest()
 
     queue.fillToMax()
@@ -92,5 +132,12 @@ describe(Queue, () => {
     expect(() => queue.enqueue(1)).toThrow(QueueOverflowError)
   })
 
-  it.todo('should disable background pruning if maxDanglingItems is Infinity')
+  it('should cap the capacity at MAX_ARRAY_LENGTH if newCapacity <= 0 or exceeds max', () => {
+    const queue = new QueueTest()
+
+    queue.setEmptyCapacity()
+    queue.enqueue(1)
+
+    expect(queue.meta.capacity).toBe(MAX_ARRAY_LENGTH)
+  })
 })

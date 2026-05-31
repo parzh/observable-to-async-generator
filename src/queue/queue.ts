@@ -1,87 +1,57 @@
-import { Slacker } from './slacker.js'
-import { validateMaxDanglingItems, MAX_ARRAY_LENGTH } from './validateMaxDanglingItems.js'
-
-export const DEFAULT_MAX_DANGLING_ITEMS = 100
-
-class Shared<Value> {
-  constructor(public value: Value) {}
-}
-
-class Pruner<Item> {
-  constructor(
-    protected readonly items: Item[],
-    protected readonly start: Shared<number>,
-  ) {}
-
-  prune() {
-    const lengthPruned = this.items.length - this.start.value
-
-    for (let index = 0; index < lengthPruned; index++) {
-      this.items[index] = this.items[index + this.start.value]
-    }
-
-    this.items.length = lengthPruned
-    this.start.value = 0
-  }
-}
-
-export interface QueueParams {
-  /**
-   * The number of items removed from the queue after which schedule pruning (normalization of pointers and items' indexes).
-   * Defaults to {@link DEFAULT_MAX_DANGLING_ITEMS}.
-   *
-   * To disable background pruning set this to `Infinity`.
-   * This doesn't disable salvage pruning, which prevents {@link QueueOverflowError} whenever possible.
-   */
-  readonly maxDanglingItems?: number
-}
+const MAX_ARRAY_LENGTH = 2 ** 32 - 1
 
 export class Queue<Item> {
-  protected readonly items: Item[] = []
-  protected readonly start = new Shared(0)
-  protected readonly pruner = new Pruner(this.items, this.start)
-  protected readonly prunerLazy = new Slacker(() => this.pruner.prune())
-  protected readonly maxDanglingItems = validateMaxDanglingItems(this.params?.maxDanglingItems ?? DEFAULT_MAX_DANGLING_ITEMS)
-  protected readonly maybePruneWhenIdle =
-    this.maxDanglingItems === MAX_ARRAY_LENGTH
-      ? () => {}
-      : () => {
-        if (this.start.value >= this.maxDanglingItems) {
-          this.prunerLazy.runWhenIdle()
-        }
-      }
-
-  constructor(protected readonly params?: QueueParams) {}
-
-  protected get size(): number {
-    return this.items.length - this.start.value
-  }
+  protected list = new Array<Item>(16)
+  protected head = 0
+  protected tail = 0
+  protected size = 0
 
   get isEmpty(): boolean {
     return this.size === 0
   }
 
-  enqueue(item: Item): void {
-    this.items.push(item)
+  protected getNextAfter(current: number, jump = 1): number {
+    return (current + jump) % this.list.length
+  }
 
-    if (this.items.length !== MAX_ARRAY_LENGTH) {
-      return
-    }
-
-    if (this.start.value === 0) {
+  protected grow() {
+    if (this.list.length === MAX_ARRAY_LENGTH) {
       throw new QueueOverflowError()
     }
 
-    this.pruner.prune()
+    let newCapacity = this.list.length * 2
+
+    if (newCapacity > MAX_ARRAY_LENGTH || newCapacity <= 0) {
+      newCapacity = MAX_ARRAY_LENGTH
+    }
+
+    const newItems = new Array<Item>(newCapacity)
+
+    for (let index = 0; index < this.size; index++) {
+      newItems[index] = this.list[this.getNextAfter(this.head, index)]
+    }
+
+    this.list = newItems
+    this.head = 0
+    this.tail = this.size
   }
 
-  // assumes there is at least one item in the queue
-  dequeue(): Item {
-    const item = this.items[this.start.value]
+  enqueue(item: Item): void {
+    if (this.size === this.list.length) {
+      this.grow()
+    }
 
-    this.items[this.start.value] = undefined as unknown as Item
-    this.start.value += 1
-    this.maybePruneWhenIdle()
+    this.list[this.tail] = item
+    this.tail = this.getNextAfter(this.tail)
+    this.size++
+  }
+
+  dequeue(): Item {
+    const item = this.list[this.head]
+
+    this.list[this.head] = undefined as unknown as Item
+    this.head = this.getNextAfter(this.head)
+    this.size--
 
     return item
   }
