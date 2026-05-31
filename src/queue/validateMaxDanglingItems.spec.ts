@@ -10,7 +10,7 @@ describe('validateMaxDanglingItems', () => {
     vi.restoreAllMocks()
   })
 
-  it('should return the input if it is a valid array length', () => {
+  it('should return the input if it is a valid non-zero array length', () => {
     expect(validateMaxDanglingItems(1)).toBe(1)
     expect(validateMaxDanglingItems(100)).toBe(100)
     expect(validateMaxDanglingItems(MAX_ARRAY_LENGTH)).toBe(MAX_ARRAY_LENGTH)
@@ -35,16 +35,16 @@ describe('validateMaxDanglingItems', () => {
 
   it('should throw an error if the input is <= 0', () => {
     expect(() => validateMaxDanglingItems(0)).toThrow(
-      'Invalid maxDanglingItems: expected a valid array length, got 0'
+      'Invalid maxDanglingItems: expected a valid non-zero array length, got 0'
     )
     expect(() => validateMaxDanglingItems(-1)).toThrow(
-      'Invalid maxDanglingItems: expected a valid array length, got -1'
+      'Invalid maxDanglingItems: expected a valid non-zero array length, got -1'
     )
   })
 
   it('should throw an error if the input is not an integer', () => {
     expect(() => validateMaxDanglingItems(1.5)).toThrow(
-      'Invalid maxDanglingItems: expected a valid array length, got 1.5'
+      'Invalid maxDanglingItems: expected a valid non-zero array length, got 1.5'
     )
   })
 })
