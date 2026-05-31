@@ -2,7 +2,7 @@
 
 import { type Observable, type Observer } from 'rxjs'
 import { Flow } from './flow/flow.js'
-import { Queue } from './queue/queue.js'
+import { Queue } from './queue.js'
 
 /** @private */
 const completion = {
