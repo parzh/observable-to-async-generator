@@ -1,35 +1,24 @@
-function scheduleIdleCallback(callback: () => void): void {
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  globalThis.requestIdleCallback?.(callback) ?? globalThis.setImmediate?.(callback) ?? globalThis.setTimeout?.(callback)
-}
+import { Slacker } from './slacker.js'
 
 class Shared<Value> {
   constructor(public value: Value) {}
 }
 
 class Pruner<Item> {
-  protected cleanupScheduled = false
-
   constructor(
     protected readonly items: Item[],
     protected readonly start: Shared<number>,
   ) {}
 
-  protected prune() {
-    for (let i = this.start.value; i < this.items.length; i++) {
-      this.items[i - this.start.value] = this.items[i]
+  prune() {
+    const lengthPruned = this.items.length - this.start.value
+
+    for (let index = 0; index < lengthPruned; index++) {
+      this.items[index] = this.items[index + this.start.value]
     }
 
-    this.items.length -= this.start.value
+    this.items.length = lengthPruned
     this.start.value = 0
-    this.cleanupScheduled = false
-  }
-
-  schedulePruneIfNeeded() {
-    if (!this.cleanupScheduled && this.start.value >= this.items.length / 2) {
-      scheduleIdleCallback(() => this.prune())
-      this.cleanupScheduled = true
-    }
   }
 }
 
@@ -37,6 +26,7 @@ export class Queue<Item> {
   protected readonly items: Item[] = []
   protected readonly start = new Shared(0)
   protected readonly pruner = new Pruner(this.items, this.start)
+  protected readonly prunerLazy = new Slacker(() => this.pruner.prune())
 
   get isEmpty(): boolean {
     return this.start.value >= this.items.length
@@ -52,7 +42,10 @@ export class Queue<Item> {
 
     this.items[this.start.value] = undefined as unknown as Item
     this.start.value += 1
-    this.pruner.schedulePruneIfNeeded()
+
+    if (this.start.value >= 100) {
+      this.prunerLazy.runWhenIdle()
+    }
 
     return item
   }
