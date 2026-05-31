@@ -1,5 +1,7 @@
 import { Slacker } from './slacker.js'
 
+export const DEFAULT_MAX_DANGLING_ITEMS = 100
+
 class Shared<Value> {
   constructor(public value: Value) {}
 }
@@ -22,11 +24,22 @@ class Pruner<Item> {
   }
 }
 
+export interface QueueParams {
+  /**
+   * The number of items removed from the queue after which queue pruning is scheduled.
+   * Defaults to {@link DEFAULT_MAX_DANGLING_ITEMS}.
+   */
+  readonly maxDanglingItems?: number
+}
+
 export class Queue<Item> {
   protected readonly items: Item[] = []
   protected readonly start = new Shared(0)
   protected readonly pruner = new Pruner(this.items, this.start)
   protected readonly prunerLazy = new Slacker(() => this.pruner.prune())
+  protected readonly maxDanglingItems = this.params?.maxDanglingItems ?? DEFAULT_MAX_DANGLING_ITEMS
+
+  constructor(protected readonly params?: QueueParams) {}
 
   get isEmpty(): boolean {
     return this.start.value >= this.items.length
@@ -43,7 +56,7 @@ export class Queue<Item> {
     this.items[this.start.value] = undefined as unknown as Item
     this.start.value += 1
 
-    if (this.start.value >= 100) {
+    if (this.start.value >= this.maxDanglingItems) {
       this.prunerLazy.runWhenIdle()
     }
 

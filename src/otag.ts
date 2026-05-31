@@ -2,7 +2,7 @@
 
 import { type Observable, type Observer } from 'rxjs'
 import { Flow } from './flow.js'
-import { Queue } from './queue.js'
+import { Queue, QueueParams } from './queue.js'
 
 /** @private */
 const completion = {
@@ -11,11 +11,17 @@ const completion = {
 } as const satisfies IteratorResult<unknown>
 
 /** @private */
+interface CarrierParams extends QueueParams {
+}
+
+/** @private */
 class Carrier<Value> implements Observer<Value> {
   protected readonly flow = new Flow()
-  protected readonly queue = new Queue<Value>()
+  protected readonly queue = new Queue<Value>(this.params)
   protected valueError?: Error
   protected completed = false
+
+  constructor(protected readonly params?: CarrierParams) {}
 
   private getCompletion(): IteratorResult<Value> {
     if (this.valueError) {
@@ -64,8 +70,11 @@ class Carrier<Value> implements Observer<Value> {
   }
 }
 
-export async function * otag<Value>(observable: Observable<Value>): AsyncIterableIterator<Value> {
-  const valueCarrier = new Carrier<Value>()
+export interface Params extends CarrierParams {
+}
+
+export async function * otag<Value>(observable: Observable<Value>, params?: Params): AsyncIterableIterator<Value> {
+  const valueCarrier = new Carrier<Value>(params)
   const subscription = observable.subscribe(valueCarrier)
 
   try {
