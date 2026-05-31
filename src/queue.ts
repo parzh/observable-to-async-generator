@@ -46,11 +46,8 @@ export class Queue<Item> {
     this.items.push(item)
   }
 
-  dequeue(): Item | undefined {
-    if (this.isEmpty) {
-      return undefined
-    }
-
+  // assumes there is at least one item in the queue
+  dequeue(): Item {
     const item = this.items[this.start.value]
 
     delete this.items[this.start.value++] // eslint-disable-line @typescript-eslint/no-array-delete
