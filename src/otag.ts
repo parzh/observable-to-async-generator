@@ -36,7 +36,7 @@ class Carrier<Value> implements Observer<Value> {
 
     return {
       done: false,
-      value: this.queue.dequeue()!,
+      value: this.queue.dequeue(),
     }
   }
 
