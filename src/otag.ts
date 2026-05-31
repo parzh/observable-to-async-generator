@@ -1,8 +1,8 @@
 //! Credit goes to https://stackoverflow.com/a/44123368/4554883
 
 import { type Observable, type Observer } from 'rxjs'
-import { Flow } from './flow.js'
-import { Queue, QueueParams } from './queue.js'
+import { Flow } from './flow/flow.js'
+import { Queue, QueueParams } from './queue/queue.js'
 
 /** @private */
 const completion = {
