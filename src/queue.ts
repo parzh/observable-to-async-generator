@@ -38,6 +38,14 @@ export class Queue<Item> {
   protected readonly pruner = new Pruner(this.items, this.start)
   protected readonly prunerLazy = new Slacker(() => this.pruner.prune())
   protected readonly maxDanglingItems = this.params?.maxDanglingItems ?? DEFAULT_MAX_DANGLING_ITEMS
+  protected readonly maybePruneWhenIdle =
+    this.maxDanglingItems === Infinity
+      ? () => {}
+      : () => {
+        if (this.start.value >= this.maxDanglingItems) {
+          this.prunerLazy.runWhenIdle()
+        }
+      }
 
   constructor(protected readonly params?: QueueParams) {}
 
@@ -55,10 +63,7 @@ export class Queue<Item> {
 
     this.items[this.start.value] = undefined as unknown as Item
     this.start.value += 1
-
-    if (this.start.value >= this.maxDanglingItems) {
-      this.prunerLazy.runWhenIdle()
-    }
+    this.maybePruneWhenIdle()
 
     return item
   }
