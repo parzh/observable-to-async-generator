@@ -64,13 +64,15 @@ export class Queue<Item> {
   enqueue(item: Item): void {
     this.items.push(item)
 
-    if (this.items.length === MAX_ARRAY_LENGTH) {
-      if (this.start.value === 0) {
-        throw new QueueOverflowError()
-      }
-
-      this.pruner.prune()
+    if (this.items.length !== MAX_ARRAY_LENGTH) {
+      return
     }
+
+    if (this.start.value === 0) {
+      throw new QueueOverflowError()
+    }
+
+    this.pruner.prune()
   }
 
   // assumes there is at least one item in the queue
