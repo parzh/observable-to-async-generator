@@ -31,7 +31,7 @@ export interface QueueParams {
    * Defaults to {@link DEFAULT_MAX_DANGLING_ITEMS}.
    *
    * To disable background pruning set this to `Infinity`.
-   * This doesn't disable salvage pruning, which postpones {@link QueueOverflowError}.
+   * This doesn't disable salvage pruning, which prevents {@link QueueOverflowError} whenever possible.
    */
   readonly maxDanglingItems?: number
 }
