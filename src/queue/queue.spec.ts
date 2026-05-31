@@ -1,5 +1,22 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Queue } from './queue.js'
+import { Queue, QueueOverflowError } from './queue.js'
+import { MAX_ARRAY_LENGTH } from './validateMaxDanglingItems.js'
+
+class QueueTest extends Queue<number> {
+  get startValue(): number {
+    return this.start.value
+  }
+
+  fillToMax() {
+    this.items.length = MAX_ARRAY_LENGTH - 1
+    this.start.value = 0
+  }
+
+  simulateNearMax() {
+    this.items.length = MAX_ARRAY_LENGTH - 1
+    this.start.value = MAX_ARRAY_LENGTH - 2
+  }
+}
 
 describe(Queue, () => {
   it('should be empty initially', () => {
@@ -57,4 +74,23 @@ describe(Queue, () => {
 
     expect(queue.startValue).toBe(0)
   })
+
+  it('should salvage prune the queue if the array is full but dangling items are present', () => {
+    const queue = new QueueTest()
+
+    queue.simulateNearMax()
+
+    expect(() => queue.enqueue(1)).not.toThrow()
+    expect(queue.startValue).toBe(0)
+  })
+
+  it('should throw QueueOverflowError if the array is full and no dangling items are present', () => {
+    const queue = new QueueTest()
+
+    queue.fillToMax()
+
+    expect(() => queue.enqueue(1)).toThrow(QueueOverflowError)
+  })
+
+  it.todo('should disable background pruning if maxDanglingItems is Infinity')
 })
