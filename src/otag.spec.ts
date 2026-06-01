@@ -16,7 +16,7 @@ function createSubject(): Observable<42> {
       subject.complete()
       clearInterval(yielding)
     }
-  }, 10)
+  }, 1)
 
   return subject
 }
