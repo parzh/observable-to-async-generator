@@ -15,19 +15,13 @@ export class Queue<Item> {
   }
 
   protected grow() {
-    let newCapacity = this.list.length * 2
-
-    if (newCapacity > MAX_ARRAY_LENGTH || newCapacity <= 0) {
-      newCapacity = MAX_ARRAY_LENGTH
-    }
-
-    const newItems = new Array<Item>(newCapacity)
+    const list = new Array<Item>(Math.min(this.list.length * 2, MAX_ARRAY_LENGTH))
 
     for (let index = 0; index < this.size; index++) {
-      newItems[index] = this.list[this.getNextAfter(this.head, index)]
+      list[index] = this.list[this.getNextAfter(this.head, index)]
     }
 
-    this.list = newItems
+    this.list = list
     this.head = 0
     this.tail = this.size
   }

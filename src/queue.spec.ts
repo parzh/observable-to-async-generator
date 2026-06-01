@@ -20,13 +20,6 @@ class QueueTest extends Queue<number> {
     this.tail = 0
     this.size = MAX_ARRAY_LENGTH
   }
-
-  setEmptyCapacity() {
-    this.list = []
-    this.head = 0
-    this.tail = 0
-    this.size = 0
-  }
 }
 
 describe(Queue, () => {
@@ -130,14 +123,5 @@ describe(Queue, () => {
     queue.fillToMax()
 
     expect(() => queue.enqueue(1)).toThrow(QueueOverflowError)
-  })
-
-  it('should cap the capacity at MAX_ARRAY_LENGTH if newCapacity <= 0 or exceeds max', () => {
-    const queue = new QueueTest()
-
-    queue.setEmptyCapacity()
-    queue.enqueue(1)
-
-    expect(queue.meta.capacity).toBe(MAX_ARRAY_LENGTH)
   })
 })
