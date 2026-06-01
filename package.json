@@ -29,6 +29,9 @@
     "yield*",
     "yield *"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "type": "module",
   "files": [
     "/dist",

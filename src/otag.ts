@@ -2,7 +2,7 @@
 
 import { type Observable, type Observer } from 'rxjs'
 import { Flow } from './flow/flow.js'
-import { Queue } from './queue.js'
+import { Queue, QueueOverflowError } from './queue.js'
 
 /** @private */
 const completion = {
@@ -80,6 +80,12 @@ export async function * otag<Value>(observable: Observable<Value>): AsyncIterabl
 
       yield result.value
     }
+  } catch (error) {
+    if (error instanceof QueueOverflowError) {
+      throw new Error('The internal queue has reached its maximum capacity. Please, ensure that the consumer can process items, emitted by the observable, at the same speed or faster.', { cause: error })
+    }
+
+    throw error
   } finally {
     subscription.unsubscribe()
   }

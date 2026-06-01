@@ -2,6 +2,7 @@ import { describe, expect, it, test } from 'vitest'
 import { Observable, Subject, concat, from, throwError } from 'rxjs'
 import { setTimeout } from 'timers/promises'
 import { otag } from './otag.js'
+import { QueueOverflowError } from './queue.js'
 
 /** @private */
 function createSubject(): Observable<42> {
@@ -136,5 +137,26 @@ describe(otag, () => {
     }
 
     expect(unsubscribe).toHaveBeenCalled()
+  })
+
+  it('should throw a descriptive error if the internal queue overflows', async () => {
+    const subject = new Subject<number>()
+    const iterator = otag(subject)
+
+    subject.error(new QueueOverflowError(42))
+
+    try {
+      await iterator.next()
+
+      expect.fail('Expected the iterator to throw an error')
+    } catch (caught) {
+      expect(caught).toBeInstanceOf(Error)
+      expect(caught).toMatchObject({
+        message: expect.stringMatching(/.*? queue .*? maximum .*? consumer .*? faster/) as unknown,
+        cause: expect.objectContaining({
+          enqueuedItem: 42,
+        }) as unknown,
+      })
+    }
   })
 })

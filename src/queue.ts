@@ -14,9 +14,9 @@ export class Queue<Item> {
     return (current + jump) % this.list.length
   }
 
-  protected grow() {
+  protected grow(enqueuedItem: Item) {
     if (this.list.length === MAX_ARRAY_LENGTH) {
-      throw new QueueOverflowError()
+      throw new QueueOverflowError(enqueuedItem)
     }
 
     let newCapacity = this.list.length * 2
@@ -38,7 +38,7 @@ export class Queue<Item> {
 
   enqueue(item: Item): void {
     if (this.size === this.list.length) {
-      this.grow()
+      this.grow(item)
     }
 
     this.list[this.tail] = item
@@ -58,7 +58,7 @@ export class Queue<Item> {
 }
 
 export class QueueOverflowError extends Error {
-  constructor() {
+  constructor(public readonly enqueuedItem: unknown) {
     super('Queue has reached maximum capacity')
   }
 }
