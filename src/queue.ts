@@ -1,7 +1,12 @@
 const MAX_ARRAY_LENGTH = 2 ** 32 - 1
+const INITIAL_CAPACITY = 2 ** 4
+
+function createList<Item>(capacity: number): Array<Item> {
+  return new Array<Item>(Math.min(capacity, MAX_ARRAY_LENGTH))
+}
 
 export class Queue<Item> {
-  protected list = new Array<Item>(16)
+  protected list = createList<Item>(INITIAL_CAPACITY)
   protected head = 0
   protected tail = 0
   protected size = 0
@@ -15,7 +20,7 @@ export class Queue<Item> {
   }
 
   protected grow() {
-    const list = new Array<Item>(Math.min(this.list.length * 2, MAX_ARRAY_LENGTH))
+    const list = createList<Item>(this.list.length * 2)
 
     for (let index = 0; index < this.size; index++) {
       list[index] = this.list[this.getNextAfter(this.head, index)]
