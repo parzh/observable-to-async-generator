@@ -48,7 +48,7 @@ export class Queue<Item> {
   dequeue(): Item {
     const item = this.list[this.head]
 
-    this.list[this.head] = undefined as unknown as Item
+    this.list[this.head] = undefined as never
     this.head = this.getNextAfter(this.head)
     this.size--
 
