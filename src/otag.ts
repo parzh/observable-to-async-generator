@@ -1,5 +1,3 @@
-//! Credit goes to https://stackoverflow.com/a/44123368/4554883
-
 import { type Observable, type Observer } from 'rxjs'
 import { Flow } from './flow/flow.js'
 import { Queue, QueueOverflowError } from './queue.js'
