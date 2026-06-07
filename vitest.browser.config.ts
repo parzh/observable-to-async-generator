@@ -6,6 +6,7 @@ export default mergeConfig(baseConfig, {
   test: {
     browser: {
       enabled: true,
+      headless: true,
       provider: playwright(),
       instances: [
         { browser: 'firefox' },

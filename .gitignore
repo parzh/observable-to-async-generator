@@ -1,5 +1,7 @@
 node_modules
 dist
+src/__screenshots__
 coverage
 *.log
 .DS_Store
+.vitest-attachments
