@@ -1,24 +1,20 @@
 import { describe, expect, it, test } from 'vitest'
 import { Observable, Subject, concat, from, throwError } from 'rxjs'
-import { setInterval } from 'timers/promises'
 import { otag } from './otag.js'
 
 /** @private */
 function createSubject(): Observable<42> {
+  let iterations = 3
+
   const subject = new Subject<42>()
-
-  void (async() => {
-    let iterations = 3
-
-    for await (const _ of setInterval(10)) {
-      if (iterations-- > 0) {
-        subject.next(42)
-      } else {
-        subject.complete()
-        break
-      }
+  const yielding = setInterval(() => {
+    if (iterations-- > 0) {
+      subject.next(42)
+    } else {
+      subject.complete()
+      clearInterval(yielding)
     }
-  })()
+  }, 10)
 
   return subject
 }
