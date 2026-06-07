@@ -5,7 +5,7 @@ const MAX_ARRAY_LENGTH = 2 ** 32 - 1 // I don't want to `export` it just for tes
 
 class QueueTest extends Queue<number> {
   get meta() {
-    // it's highly non-performant to create an object each time, but it for tests, so it's fine
+    // it's highly non-performant to create an object each time, but it's for tests, so it's fine
     return {
       capacity: this.list.length,
       head: this.head,
