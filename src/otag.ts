@@ -23,7 +23,7 @@ class Carrier<Value> implements Observer<Value> {
   }
 
   next(value: Value): void {
-    setImmediate(() => {
+    setTimeout(() => {
       this.spawnDeferred().resolve(value)
     })
   }
@@ -39,7 +39,7 @@ class Carrier<Value> implements Observer<Value> {
   error(value: unknown): void {
     const error = this.convertToError(value)
 
-    setImmediate(() => {
+    setTimeout(() => {
       this.spawnDeferred().reject(error)
     })
   }
@@ -51,7 +51,7 @@ class Carrier<Value> implements Observer<Value> {
   }
 
   complete(): void {
-    setImmediate(this.doComplete)
+    setTimeout(this.doComplete)
   }
 }
 

@@ -52,6 +52,7 @@
   },
   "scripts": {
     "test": "vitest run --coverage",
+    "test:browser": "vitest run --config vitest.browser.config.ts",
     "lint": "eslint --config eslint.config.ts \"**/*.ts\"",
     "build": "tsup && rm -f dist/*.d.cts"
   },
@@ -62,18 +63,23 @@
     "@types/node": "^24",
     "@typescript-eslint/eslint-plugin": "8.57.0",
     "@typescript-eslint/parser": "8.57.0",
-    "@vitest/coverage-istanbul": "4.1.0",
+    "@vitest/browser": "4.1.8",
+    "@vitest/browser-playwright": "4.1.8",
+    "@vitest/coverage-istanbul": "4.1.8",
+    "browserslist-to-esbuild": "2.1.1",
     "eslint": "9.39.4",
     "eslint-import-resolver-typescript": "4.4.4",
+    "eslint-plugin-compat": "7.0.2",
     "eslint-plugin-import": "2.32.0",
     "eslint-plugin-n": "17.24.0",
     "eslint-plugin-promise": "7.2.1",
     "globals": "16.5.0",
     "jiti": "2.6.1",
+    "playwright": "1.60.0",
     "rxjs": "7.8.2",
     "tsup": "8.5.1",
     "typescript": "5.9.3",
-    "vitest": "4.1.0"
+    "vitest": "4.1.8"
   },
   "peerDependencies": {
     "rxjs": "6 || 7"

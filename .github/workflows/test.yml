@@ -9,11 +9,22 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-node@v6
-      with:
-        node-version-file: '/.nvmrc'
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '/.nvmrc'
+          cache: 'npm'
 
-    - run: npm ci
-    - run: npm run lint
-    - run: npm test
+      - uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-firefox-${{ hashFiles('package-lock.json') }}
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npx playwright install-deps firefox
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install firefox
+      - run: npm run test:browser -- --browser.name=firefox
