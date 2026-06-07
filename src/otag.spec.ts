@@ -1,6 +1,12 @@
-import { describe, expect, it, test } from 'vitest'
+import { describe, expect, it, test, vi } from 'vitest'
 import { Observable, Subject, concat, from, throwError } from 'rxjs'
 import { otag } from './otag.js'
+import { QueueOverflowError } from './queue.js'
+
+/** @private */
+function delay(msec: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, msec))
+}
 
 /** @private */
 function createSubject(): Observable<42> {
@@ -14,7 +20,7 @@ function createSubject(): Observable<42> {
       subject.complete()
       clearInterval(yielding)
     }
-  }, 10)
+  }, 1)
 
   return subject
 }
@@ -82,6 +88,79 @@ describe(otag, () => {
       }
 
       expect(values).toStrictEqual([42, 42, 42])
+    }
+  })
+
+  it('should not drop values when the consumer is slower than the observable', async () => {
+    const observable = createObservable()
+    const values: Array<42> = []
+
+    for await (const value of otag(observable)) {
+      values.push(value)
+
+      await delay(20)
+    }
+
+    expect(values).toStrictEqual([42, 42, 42])
+  })
+
+  it('should ignore emissions after completion or error', async () => {
+    const subject = new Subject<number>()
+    const iterator = otag(subject)
+
+    const firstPromise = iterator.next()
+
+    subject.next(1)
+    subject.complete()
+    subject.next(2)
+    subject.error(new Error('Unexpected error'))
+    subject.complete()
+
+    const first = await firstPromise
+
+    expect(first.value).toBe(1)
+    expect(first.done).toBe(false)
+
+    const second = await iterator.next()
+
+    expect(second.done).toBe(true)
+  })
+
+  it('should unsubscribe from the observable if the generator is cancelled early', async () => {
+    const unsubscribe = vi.fn()
+    const observable = new Observable<number>((subscriber) => {
+      subscriber.next(1)
+      subscriber.next(2)
+
+      return unsubscribe
+    })
+
+    for await (const value of otag(observable)) {
+      expect(value).toBe(1)
+      break
+    }
+
+    expect(unsubscribe).toHaveBeenCalled()
+  })
+
+  it('should throw a descriptive error if the internal queue overflows', async () => {
+    const subject = new Subject<number>()
+    const iterator = otag(subject)
+
+    subject.error(new QueueOverflowError(42))
+
+    try {
+      await iterator.next()
+
+      expect.fail('Expected the iterator to throw an error')
+    } catch (caught) {
+      expect(caught).toBeInstanceOf(Error)
+      expect(caught).toMatchObject({
+        message: expect.stringMatching(/.*? queue .*? maximum .*? consumer .*? faster/) as unknown,
+        cause: expect.objectContaining({
+          enqueuedItem: 42,
+        }) as unknown,
+      })
     }
   })
 })
