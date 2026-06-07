@@ -30,6 +30,12 @@ jobs:
               fi
             done
           else
-            echo "Not implemented" >&2
-            exit 1
+            if [[ " $CHANGED_FILENAMES " =~ " package.json " ]]; then
+              OLD_VERSION=$(git show $BASE_REF:package.json 2>/dev/null | jq -r '.version' || echo "")
+              NEW_VERSION=$(jq -r '.version' package.json 2>/dev/null || echo "")
+              if [ -n "$OLD_VERSION" ] && [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
+                echo "Non-release branches must not modify the version" >&2
+                exit 1
+              fi
+            fi
           fi
