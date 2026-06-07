@@ -1,4 +1,4 @@
-import { describe, expect, it, test } from 'vitest'
+import { describe, expect, it, test, vi } from 'vitest'
 import { Observable, Subject, concat, from, throwError } from 'rxjs'
 import { setTimeout } from 'timers/promises'
 import { otag } from './otag.js'
@@ -123,7 +123,7 @@ describe(otag, () => {
   })
 
   it('should unsubscribe from the observable if the generator is cancelled early', async () => {
-    using unsubscribe = vi.fn()
+    const unsubscribe = vi.fn()
     const observable = new Observable<number>((subscriber) => {
       subscriber.next(1)
       subscriber.next(2)
