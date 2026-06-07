@@ -35,9 +35,10 @@ class Carrier<Value> implements Observer<Value> {
       await this.flow.pause()
     }
 
-    const value = this.queue.dequeue()
-
-    return { done: false, value }
+    return {
+      done: false,
+      value: this.queue.dequeue(),
+    }
   }
 
   next(value: Value): void {
