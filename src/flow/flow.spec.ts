@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Flow } from './flow.js'
 
 async function expectToHaveActedAfterFlowResumed(flow: Flow): Promise<void> {
-  using action = vi.fn()
+  const action = vi.fn()
   const promise = flow.pause().then(action)
 
   expect(action).not.toHaveBeenCalled()
