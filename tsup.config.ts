@@ -1,3 +1,4 @@
+import browsers from 'browserslist-to-esbuild'
 import { defineConfig } from 'tsup'
 import { fileURLToPath } from 'url'
 import pkg from './package.json' with { type: 'json' }
@@ -8,6 +9,10 @@ export default defineConfig({
     fileURLToPath(new URL('src/index.ts', import.meta.url)),
   ],
   format: ['cjs', 'esm'],
+  target: [
+    'node16',
+    ...browsers(),
+  ],
   dts: true,
   sourcemap: true,
   minify: true,
