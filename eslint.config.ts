@@ -24,6 +24,7 @@ export default [
     "plugin:import/recommended",
     "plugin:n/recommended",
     "plugin:promise/recommended",
+    "plugin:compat/recommended",
   ),
   {
     plugins: {
