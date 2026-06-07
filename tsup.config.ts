@@ -1,12 +1,11 @@
 import browsers from 'browserslist-to-esbuild'
 import { defineConfig } from 'tsup'
-import { fileURLToPath } from 'url'
 import pkg from './package.json' with { type: 'json' }
 
 export default defineConfig({
   clean: true,
   entry: [
-    fileURLToPath(new URL('src/index.ts', import.meta.url)),
+    'src/index.ts',
   ],
   format: ['cjs', 'esm'],
   target: [
