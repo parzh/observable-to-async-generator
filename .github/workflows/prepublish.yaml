@@ -1,0 +1,35 @@
+name: Validate release PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Validate PR changes
+        env:
+          BASE_REF: origin/${{ github.event.pull_request.base.ref }}
+        run: |
+          IS_RELEASE_BRANCH=$([[ "$HEAD_REF" == release/* ]] && echo true || echo false)
+          CHANGED_FILENAMES=$(git diff --name-only $BASE_REF...HEAD || echo "")
+
+          if [ "$IS_RELEASE_BRANCH" == "true" ]; then
+            for FILE in $CHANGED_FILENAMES; do
+              if [ "$FILE" != "package.json" ] && [ "$FILE" != "package-lock.json" ]; then
+                echo "Release branch must only modify package.json and package-lock.json; instead it modifies $CHANGED_FILENAMES" >&2
+                exit 1
+              fi
+            done
+          else
+            echo "Not implemented" >&2
+            exit 1
+          fi
