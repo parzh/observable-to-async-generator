@@ -86,15 +86,15 @@ jobs:
     if: needs.info.outputs.RELEASE_PENDING == 'true'
     name: Check version is new
     runs-on: ubuntu-latest
-    env:
-      PACKAGE_VERSION: ${{ needs.info.outputs.PACKAGE_VERSION }}
-      PACKAGE_NAME: ${{ needs.info.outputs.PACKAGE_NAME }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: "/.nvmrc"
       - name: Assert version is not published
+        env:
+          PACKAGE_VERSION: ${{ needs.info.outputs.PACKAGE_VERSION }}
+          PACKAGE_NAME: ${{ needs.info.outputs.PACKAGE_NAME }}
         run: |2
           set -e
           if [ ! -z "$(npm view $PACKAGE_NAME@$PACKAGE_VERSION version)" ]; then
