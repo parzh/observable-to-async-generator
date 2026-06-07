@@ -1,8 +1,12 @@
 import { describe, expect, it, test, vi } from 'vitest'
 import { Observable, Subject, concat, from, throwError } from 'rxjs'
-import { setTimeout } from 'timers/promises'
 import { otag } from './otag.js'
 import { QueueOverflowError } from './queue.js'
+
+/** @private */
+function delay(msec: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, msec))
+}
 
 /** @private */
 function createSubject(): Observable<42> {
@@ -94,7 +98,7 @@ describe(otag, () => {
     for await (const value of otag(observable)) {
       values.push(value)
 
-      await setTimeout(20)
+      await delay(20)
     }
 
     expect(values).toStrictEqual([42, 42, 42])
