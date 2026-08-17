@@ -26,7 +26,7 @@ jobs:
       DEPS_FOUND: ${{ steps.info.outputs.DEPS_FOUND }}
       VERSION_CHANGED: ${{ steps.info.outputs.VERSION_CHANGED }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 2
       - id: info
@@ -85,7 +85,7 @@ jobs:
       PACKAGE_VERSION: ${{ needs.package-info.outputs.PACKAGE_VERSION }}
       PACKAGE_NAME: ${{ needs.package-info.outputs.PACKAGE_NAME }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version-file: "/.nvmrc"
@@ -121,7 +121,7 @@ jobs:
       - check-no-deps
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version-file: "/.nvmrc"
@@ -145,7 +145,7 @@ jobs:
     needs:
       - lint
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
@@ -166,7 +166,7 @@ jobs:
           - firefox
           - webkit
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version-file: '/.nvmrc'
@@ -191,7 +191,7 @@ jobs:
       - test
       - test-browser
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version-file: "/.nvmrc"
@@ -206,7 +206,7 @@ jobs:
       - publish
       - package-info
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Add version tag
         env:
           PACKAGE_VERSION: ${{ needs.package-info.outputs.PACKAGE_VERSION }}
