@@ -86,7 +86,7 @@ jobs:
       PACKAGE_NAME: ${{ needs.package-info.outputs.PACKAGE_NAME }}
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: "/.nvmrc"
       - name: Assert version is not published
@@ -122,7 +122,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: "/.nvmrc"
       - run: npm ci
@@ -146,7 +146,7 @@ jobs:
       - lint
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
@@ -167,7 +167,7 @@ jobs:
           - webkit
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: '/.nvmrc'
           cache: 'npm'
@@ -192,7 +192,7 @@ jobs:
       - test-browser
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: "/.nvmrc"
       - run: npm ci
